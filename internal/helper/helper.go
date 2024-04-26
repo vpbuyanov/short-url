@@ -14,11 +14,11 @@ func init() {
 	urls = make(map[string]string)
 }
 
-func CreateShortUrl(url string) string {
+func CreateShortURL(url string) string {
 	var res string
 
 	for {
-		res = generateUrl()
+		res = generateURL()
 
 		_, ok := urls[res]
 		if !ok {
@@ -31,7 +31,7 @@ func CreateShortUrl(url string) string {
 	return res
 }
 
-func GetShortUrl(url string) *string {
+func GetShortURL(url string) *string {
 	getUrl, ok := urls[url]
 	if ok {
 		return &getUrl
@@ -40,7 +40,7 @@ func GetShortUrl(url string) *string {
 	return nil
 }
 
-func generateUrl() string {
+func generateURL() string {
 	code := make([]string, 10)
 	for i := 0; i < 10; i++ {
 		randNumber := rand.Intn(3)

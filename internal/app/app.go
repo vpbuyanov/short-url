@@ -26,7 +26,7 @@ func handlerShorter(w http.ResponseWriter, r *http.Request) {
 		p := r.URL.Path
 
 		if p == "/" {
-			createShortUrl(w, r)
+			createShortURL(w, r)
 			return
 		}
 
@@ -38,7 +38,7 @@ func handlerShorter(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		getFullUrl(w, r)
+		getFullURL(w, r)
 		return
 	default:
 		http.Error(w, "method not allowed", http.StatusBadRequest)
@@ -46,7 +46,7 @@ func handlerShorter(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func createShortUrl(w http.ResponseWriter, r *http.Request) {
+func createShortURL(w http.ResponseWriter, r *http.Request) {
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
@@ -61,7 +61,7 @@ func createShortUrl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	shortUrl := helper.CreateShortUrl(string(body))
+	shortUrl := helper.CreateShortURL(string(body))
 	shortUrl = fmt.Sprintf("http://localhost:8080/%s", shortUrl)
 
 	w.Header().Set("Content-Type", "text/html")
@@ -76,9 +76,9 @@ func createShortUrl(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func getFullUrl(w http.ResponseWriter, r *http.Request) {
+func getFullURL(w http.ResponseWriter, r *http.Request) {
 	url := r.URL.Path[1:]
-	fullUrl := helper.GetShortUrl(url)
+	fullUrl := helper.GetShortURL(url)
 
 	if fullUrl == nil {
 		http.Error(w, "short url not found", http.StatusNotFound)
