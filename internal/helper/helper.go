@@ -32,9 +32,9 @@ func CreateShortURL(url string) string {
 }
 
 func GetShortURL(url string) *string {
-	getUrl, ok := urls[url]
+	getURL, ok := urls[url]
 	if ok {
-		return &getUrl
+		return &getURL
 	}
 
 	return nil
