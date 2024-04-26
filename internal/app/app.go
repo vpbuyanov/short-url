@@ -61,13 +61,13 @@ func createShortURL(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	shortUrl := helper.CreateShortURL(string(body))
-	shortUrl = fmt.Sprintf("http://localhost:8080/%s", shortUrl)
+	shortURL := helper.CreateShortURL(string(body))
+	shortURL = fmt.Sprintf("http://localhost:8080/%s", shortURL)
 
 	w.Header().Set("Content-Type", "text/html")
 	w.WriteHeader(http.StatusCreated)
 
-	_, err = w.Write([]byte(shortUrl))
+	_, err = w.Write([]byte(shortURL))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -78,14 +78,14 @@ func createShortURL(w http.ResponseWriter, r *http.Request) {
 
 func getFullURL(w http.ResponseWriter, r *http.Request) {
 	url := r.URL.Path[1:]
-	fullUrl := helper.GetShortURL(url)
+	fullURL := helper.GetShortURL(url)
 
-	if fullUrl == nil {
+	if fullURL == nil {
 		http.Error(w, "short url not found", http.StatusNotFound)
 		return
 	}
 
-	w.Header().Set("Location", *fullUrl)
+	w.Header().Set("Location", *fullURL)
 	w.WriteHeader(http.StatusTemporaryRedirect)
 
 	return
