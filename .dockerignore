@@ -24,3 +24,9 @@ vendor/
 
 # Env
 .env
+
+Dockerfile
+docker-compose.yml
+Makefile
+
+*.md
