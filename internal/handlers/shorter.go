@@ -14,27 +14,32 @@ func (h *handlers) Shorter(w http.ResponseWriter, r *http.Request) {
 		p := r.URL.Path
 
 		if p == "/" {
-			createShortURL(w, r)
+			h.createShortURL(w, r)
+			h.logger.Infof("created short url")
 			return
 		}
 
-		http.Error(w, "", http.StatusBadRequest)
+		h.logger.Error("status bad request, page not found")
+		http.Error(w, "status bad request, page not found", http.StatusBadRequest)
 		return
 	case http.MethodGet:
 		if r.URL.Path == "/" {
+			h.logger.Error("StatusNotFound, not send id")
 			http.Error(w, "send id", http.StatusNotFound)
 			return
 		}
 
-		getFullURL(w, r)
+		h.getFullURL(w, r)
+		h.logger.Info("sent short url")
 		return
 	default:
+		h.logger.Error("unknown method, status bad request")
 		http.Error(w, "method not allowed", http.StatusBadRequest)
 		return
 	}
 }
 
-func createShortURL(w http.ResponseWriter, r *http.Request) {
+func (h *handlers) createShortURL(w http.ResponseWriter, r *http.Request) {
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
@@ -67,7 +72,7 @@ func createShortURL(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func getFullURL(w http.ResponseWriter, r *http.Request) {
+func (h *handlers) getFullURL(w http.ResponseWriter, r *http.Request) {
 	url := r.URL.Path[1:]
 	fullURL := helper.GetShortURL(url)
 
