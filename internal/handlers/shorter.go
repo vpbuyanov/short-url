@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-
-	"github.com/vpbuyanov/short-url/internal/helper"
 )
 
 func (h *handlers) Shorter(w http.ResponseWriter, r *http.Request) {
@@ -14,7 +12,7 @@ func (h *handlers) Shorter(w http.ResponseWriter, r *http.Request) {
 		p := r.URL.Path
 
 		if p == "/" {
-			h.createShortURL(w, r)
+			h.CreateShortURL(w, r)
 			h.logger.Infof("created short url")
 			return
 		}
@@ -29,7 +27,7 @@ func (h *handlers) Shorter(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		h.getFullURL(w, r)
+		h.GetFullURL(w, r)
 		h.logger.Info("sent short url")
 		return
 	default:
@@ -39,7 +37,7 @@ func (h *handlers) Shorter(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *handlers) createShortURL(w http.ResponseWriter, r *http.Request) {
+func (h *handlers) CreateShortURL(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		h.logger.Error("method not allowed")
@@ -68,7 +66,7 @@ func (h *handlers) createShortURL(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	shortURL := helper.CreateShortURL(string(body))
+	shortURL := h.url.CreateShortURL(string(body))
 	shortURL = fmt.Sprintf("http://localhost:8080/%s", shortURL)
 
 	w.Header().Del("Content-Type")
@@ -82,7 +80,7 @@ func (h *handlers) createShortURL(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *handlers) getFullURL(w http.ResponseWriter, r *http.Request) {
+func (h *handlers) GetFullURL(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		h.logger.Error("method not allowed")
@@ -96,7 +94,7 @@ func (h *handlers) getFullURL(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fullURL := helper.GetShortURL(url)
+	fullURL := h.url.GetShortURL(url)
 
 	if fullURL == nil {
 		http.Error(w, "short url not found", http.StatusBadRequest)

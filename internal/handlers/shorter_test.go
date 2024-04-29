@@ -63,14 +63,13 @@ func TestCreateShortURL(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			h := &handlers{
-				logger: logger,
-			}
+			h := New(logger)
 
 			request := httptest.NewRequest(test.method, test.path, test.body)
 
 			w := httptest.NewRecorder()
-			h.createShortURL(w, request)
+
+			h.CreateShortURL(w, request)
 			test.assert(w)
 		})
 	}
@@ -91,7 +90,7 @@ func TestGetFullURL(t *testing.T) {
 		assert func(w *httptest.ResponseRecorder)
 	}{
 		{
-			name:   "positive_test_#2",
+			name:   "positive_test_#1",
 			path:   "/abcdefgG12",
 			method: http.MethodGet,
 			assert: func(w *httptest.ResponseRecorder) {
@@ -133,14 +132,12 @@ func TestGetFullURL(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			h := &handlers{
-				logger: logger,
-			}
+			h := New(logger)
 
 			request := httptest.NewRequest(test.method, test.path, nil)
 
 			w := httptest.NewRecorder()
-			h.getFullURL(w, request)
+			h.GetFullURL(w, request)
 			test.assert(w)
 		})
 	}

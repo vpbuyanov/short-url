@@ -6,34 +6,43 @@ import (
 	"strings"
 )
 
-var (
-	urls map[string]string
-)
-
-func init() {
-	urls = make(map[string]string)
-	urls["abcdefgG12"] = "https://google.com"
+type Url interface {
+	CreateShortURL(url string) string
+	GetShortURL(url string) *string
 }
 
-func CreateShortURL(url string) string {
+type url struct {
+	urls map[string]string
+}
+
+func New() Url {
+	newUrls := make(map[string]string)
+	newUrls["abcdefgG12"] = "https://google.com"
+
+	return &url{
+		urls: newUrls,
+	}
+}
+
+func (u *url) CreateShortURL(url string) string {
 	var res string
 
 	for {
-		res = generateURL()
+		res = u.generateURL()
 
-		_, ok := urls[res]
+		_, ok := u.urls[res]
 		if !ok {
 			break
 		}
 	}
 
-	urls[res] = url
+	u.urls[res] = url
 
 	return res
 }
 
-func GetShortURL(url string) *string {
-	getURL, ok := urls[url]
+func (u *url) GetShortURL(url string) *string {
+	getURL, ok := u.urls[url]
 	if ok {
 		return &getURL
 	}
@@ -41,7 +50,7 @@ func GetShortURL(url string) *string {
 	return nil
 }
 
-func generateURL() string {
+func (u *url) generateURL() string {
 	code := make([]string, 10)
 	for i := 0; i < 10; i++ {
 		randNumber := rand.Intn(3)
