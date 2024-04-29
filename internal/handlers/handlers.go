@@ -1,10 +1,11 @@
 package handlers
 
 import (
-	"github.com/vpbuyanov/short-url/internal/helper"
 	"net/http"
 
 	"github.com/sirupsen/logrus"
+
+	"github.com/vpbuyanov/short-url/internal/helper"
 )
 
 type Handler interface {
@@ -15,7 +16,7 @@ type Handler interface {
 
 type handlers struct {
 	logger *logrus.Logger
-	url    helper.Url
+	url    helper.URL
 }
 
 func New(log *logrus.Logger) Handler {

@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-type Url interface {
+type URL interface {
 	CreateShortURL(url string) string
 	GetShortURL(url string) *string
 }
@@ -15,7 +15,7 @@ type url struct {
 	urls map[string]string
 }
 
-func New() Url {
+func New() URL {
 	newUrls := make(map[string]string)
 	newUrls["abcdefgG12"] = "https://google.com"
 
