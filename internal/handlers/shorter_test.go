@@ -91,7 +91,16 @@ func TestGetFullURL(t *testing.T) {
 		assert func(w *httptest.ResponseRecorder)
 	}{
 		{
-			name:   "negative_test_#1",
+			name:   "positive_test_#2",
+			path:   "/abcdefgG12",
+			method: http.MethodGet,
+			assert: func(w *httptest.ResponseRecorder) {
+				assert.Equal(t, http.StatusTemporaryRedirect, w.Code)
+				assert.Equal(t, "https://google.com", w.Header().Get("Location"))
+			},
+		},
+		{
+			name:   "negative_test_#2",
 			path:   "/as",
 			method: http.MethodGet,
 			assert: func(w *httptest.ResponseRecorder) {
@@ -101,7 +110,7 @@ func TestGetFullURL(t *testing.T) {
 			},
 		},
 		{
-			name:   "negative_test_#2",
+			name:   "negative_test_#3",
 			path:   "/",
 			method: http.MethodGet,
 			assert: func(w *httptest.ResponseRecorder) {
@@ -111,7 +120,7 @@ func TestGetFullURL(t *testing.T) {
 			},
 		},
 		{
-			name:   "negative_test_#3",
+			name:   "negative_test_#4",
 			path:   "/",
 			method: http.MethodPost,
 			assert: func(w *httptest.ResponseRecorder) {

@@ -12,6 +12,7 @@ var (
 
 func init() {
 	urls = make(map[string]string)
+	urls["abcdefgG12"] = "https://google.com"
 }
 
 func CreateShortURL(url string) string {
