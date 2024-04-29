@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  short-url:
+    image: vpbuyanov/short-url:latest
+    container_name: short-url
+    restart: unless-stopped
+    ports:
+      - "8801:8801"
+    networks:
+      short:
+
+networks:
+  short:
