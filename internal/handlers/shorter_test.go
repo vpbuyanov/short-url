@@ -106,6 +106,14 @@ func TestCreateShortURL(t *testing.T) {
 			req := httptest.NewRequest(test.method, test.path, test.body)
 
 			resp, err := a.Test(req, -1)
+
+			defer func() {
+				err = resp.Body.Close()
+				if err != nil {
+					return
+				}
+			}()
+
 			if err != nil {
 				return
 			}
@@ -224,6 +232,13 @@ func TestGetFullURL(t *testing.T) {
 			req := httptest.NewRequest(test.method, test.path, nil)
 
 			resp, err := a.Test(req, -1)
+			defer func() {
+				err = resp.Body.Close()
+				if err != nil {
+					return
+				}
+			}()
+
 			if err != nil {
 				return
 			}
