@@ -1,17 +1,14 @@
 package handlers
 
 import (
-	"net/http"
-
+	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
 
 	"github.com/vpbuyanov/short-url/internal/helper"
 )
 
 type Handler interface {
-	Shorter(w http.ResponseWriter, r *http.Request)
-	CreateShortURL(w http.ResponseWriter, r *http.Request)
-	GetFullURL(w http.ResponseWriter, r *http.Request)
+	RegisterRouter(ctx fiber.Router)
 }
 
 type handlers struct {
@@ -26,4 +23,9 @@ func New(log *logrus.Logger) Handler {
 		logger: log,
 		url:    url,
 	}
+}
+
+func (h *handlers) RegisterRouter(app fiber.Router) {
+	app.Post("/", h.createShortURL)
+	app.Get("/:id", h.getFullURL)
 }

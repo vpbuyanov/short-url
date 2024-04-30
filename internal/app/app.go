@@ -2,16 +2,15 @@ package app
 
 import (
 	"context"
-	"net/http"
 
 	"github.com/sirupsen/logrus"
 
 	"github.com/vpbuyanov/short-url/configs"
-	"github.com/vpbuyanov/short-url/internal/handlers"
+	"github.com/vpbuyanov/short-url/internal/server"
 )
 
 type App interface {
-	Start(ctx context.Context) error
+	Run(ctx context.Context) error
 }
 
 type app struct {
@@ -26,10 +25,9 @@ func New(config *configs.Config, log *logrus.Logger) App {
 	}
 }
 
-func (app *app) Start(ctx context.Context) error {
-	h := handlers.New(app.logger)
+func (app *app) Run(ctx context.Context) error {
+	s := server.New(app.logger, app.cfg.Server)
 
-	http.HandleFunc("/", h.Shorter)
-
-	return http.ListenAndServe("0.0.0.0:8080", nil)
+	s.Start(ctx)
+	return nil
 }

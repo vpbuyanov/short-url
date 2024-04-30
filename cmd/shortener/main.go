@@ -24,5 +24,8 @@ func main() {
 
 	a := app.New(cfg, logger)
 
-	a.Start(ctx)
+	err = a.Run(ctx)
+	if err != nil {
+		panic(err)
+	}
 }
