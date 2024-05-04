@@ -139,7 +139,6 @@ func TestCreateShortURL(t *testing.T) {
 			}()
 		})
 	}
-
 }
 
 func TestGetFullURL(t *testing.T) {
@@ -226,7 +225,7 @@ func TestGetFullURL(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			req := httptest.NewRequest(test.method, test.path, nil)
+			req := httptest.NewRequest(test.method, test.path, http.NoBody)
 
 			resp, err := a.Test(req, -1)
 			if err != nil {

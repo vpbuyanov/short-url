@@ -6,6 +6,15 @@ import (
 	"strings"
 )
 
+const (
+	lenHash            = 10
+	numberOfComponents = 3
+	numbers            = 10
+	uppercase          = 65
+	lowercase          = 97
+	ascii              = 128
+)
+
 type URL interface {
 	CreateShortURL(url string) string
 	GetShortURL(url string) *string
@@ -51,15 +60,17 @@ func (u *url) GetShortURL(url string) *string {
 }
 
 func (u *url) generateURL() string {
-	code := make([]string, 10)
-	for i := 0; i < 10; i++ {
-		randNumber := rand.Intn(3)
-		if randNumber == 1 {
-			code[i] = strconv.Itoa(rand.Intn(10))
-		} else if randNumber == 2 {
-			code[i] = string(rune(rand.Intn(128)%26 + 65))
-		} else {
-			code[i] = string(rune(rand.Intn(128)%26 + 97))
+	code := make([]string, lenHash)
+	for i := range lenHash {
+		randNumber := rand.Intn(numberOfComponents)
+
+		switch randNumber {
+		case 0:
+			code[i] = strconv.Itoa(rand.Intn(numbers))
+		case 1:
+			code[i] = string(rune(rand.Intn(ascii)%26 + uppercase))
+		default:
+			code[i] = string(rune(rand.Intn(ascii)%26 + lowercase))
 		}
 	}
 	return strings.Join(code, "")
