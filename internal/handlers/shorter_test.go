@@ -12,7 +12,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/vpbuyanov/short-url/internal/helper"
+	"github.com/vpbuyanov/short-url/internal/services"
 )
 
 func TestCreateShortURL(t *testing.T) {
@@ -23,11 +23,12 @@ func TestCreateShortURL(t *testing.T) {
 	log.Level = logrus.DebugLevel
 
 	tests := []struct {
-		name   string
-		path   string
-		method string
-		body   io.Reader
-		assert func(w *http.Response)
+		name        string
+		path        string
+		method      string
+		contentType string
+		body        io.Reader
+		assert      func(w *http.Response)
 	}{
 		{
 			name: "positive_test_#1",
@@ -35,7 +36,8 @@ func TestCreateShortURL(t *testing.T) {
 			body: io.MultiReader(
 				bytes.NewReader([]byte("https://www.google.com")),
 			),
-			method: http.MethodPost,
+			contentType: "text/plain; charset=utf-8",
+			method:      http.MethodPost,
 			assert: func(w *http.Response) {
 				assert.Equal(t, http.StatusCreated, w.StatusCode)
 				assert.Equal(t, "text/plain", w.Header.Get("Content-Type"))
@@ -47,13 +49,6 @@ func TestCreateShortURL(t *testing.T) {
 			method: http.MethodPost,
 			body:   nil,
 			assert: func(w *http.Response) {
-				defer func() {
-					err := w.Body.Close()
-					if err != nil {
-						return
-					}
-				}()
-
 				body, err := io.ReadAll(w.Body)
 				if err != nil {
 					return
@@ -65,18 +60,41 @@ func TestCreateShortURL(t *testing.T) {
 			},
 		},
 		{
-			name:   "negative_test_#3",
-			path:   "/",
-			method: http.MethodGet,
-			body:   nil,
+			name:        "negative_test_#3",
+			path:        "/",
+			method:      http.MethodPost,
+			body:        io.MultiReader(bytes.NewReader([]byte(` { "url" : "https://www.google.com" } `))),
+			contentType: "application/json; charset=utf-8",
 			assert: func(w *http.Response) {
-				defer func() {
-					err := w.Body.Close()
-					if err != nil {
-						return
-					}
-				}()
+				assert.Equal(t, http.StatusBadRequest, w.StatusCode)
+			},
+		},
+		{
+			name:   "negative_test_#4",
+			path:   "/as",
+			method: http.MethodPost,
+			body: io.MultiReader(
+				bytes.NewReader([]byte("https://www.google.com")),
+			),
+			contentType: "text/plain; charset=utf-8",
+			assert: func(w *http.Response) {
+				body, err := io.ReadAll(w.Body)
+				if err != nil {
+					return
+				}
 
+				assert.Equal(t, http.StatusNotFound, w.StatusCode)
+				assert.Equal(t, "text/plain; charset=utf-8", w.Header.Get("Content-Type"))
+				assert.Equal(t, "Not Found", string(body))
+			},
+		},
+		{
+			name:        "negative_test_#5",
+			path:        "/",
+			method:      http.MethodGet,
+			body:        nil,
+			contentType: "text/plain; charset=utf-8",
+			assert: func(w *http.Response) {
 				body, err := io.ReadAll(w.Body)
 				if err != nil {
 					return
@@ -92,7 +110,7 @@ func TestCreateShortURL(t *testing.T) {
 	a := fiber.New()
 	a.Use(logger.New())
 
-	url := helper.New()
+	url := services.New()
 
 	h := handlers{
 		logger: log,
@@ -104,21 +122,21 @@ func TestCreateShortURL(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			req := httptest.NewRequest(test.method, test.path, test.body)
+			req.Header.Set("Content-Type", test.contentType)
 
-			resp, err := a.Test(req, -1)
-
-			defer func() {
-				err = resp.Body.Close()
-				if err != nil {
-					return
-				}
-			}()
-
+			resp, err := a.Test(req, 10)
 			if err != nil {
 				return
 			}
 
 			test.assert(resp)
+
+			defer func() {
+				err = resp.Body.Close()
+				if err != nil {
+					panic(err)
+				}
+			}()
 		})
 	}
 
@@ -152,13 +170,6 @@ func TestGetFullURL(t *testing.T) {
 			path:   "/as",
 			method: http.MethodGet,
 			assert: func(w *http.Response) {
-				defer func() {
-					err := w.Body.Close()
-					if err != nil {
-						return
-					}
-				}()
-
 				body, err := io.ReadAll(w.Body)
 				if err != nil {
 					return
@@ -174,13 +185,6 @@ func TestGetFullURL(t *testing.T) {
 			path:   "/",
 			method: http.MethodGet,
 			assert: func(w *http.Response) {
-				defer func() {
-					err := w.Body.Close()
-					if err != nil {
-						return
-					}
-				}()
-
 				body, err := io.ReadAll(w.Body)
 				if err != nil {
 					return
@@ -196,13 +200,6 @@ func TestGetFullURL(t *testing.T) {
 			path:   "/asd",
 			method: http.MethodPost,
 			assert: func(w *http.Response) {
-				defer func() {
-					err := w.Body.Close()
-					if err != nil {
-						return
-					}
-				}()
-
 				body, err := io.ReadAll(w.Body)
 				if err != nil {
 					return
@@ -218,7 +215,7 @@ func TestGetFullURL(t *testing.T) {
 	a := fiber.New()
 	a.Use(logger.New())
 
-	url := helper.New()
+	url := services.New()
 
 	h := handlers{
 		logger: log,
@@ -232,18 +229,18 @@ func TestGetFullURL(t *testing.T) {
 			req := httptest.NewRequest(test.method, test.path, nil)
 
 			resp, err := a.Test(req, -1)
-			defer func() {
-				err = resp.Body.Close()
-				if err != nil {
-					return
-				}
-			}()
-
 			if err != nil {
 				return
 			}
 
 			test.assert(resp)
+
+			defer func() {
+				err = resp.Body.Close()
+				if err != nil {
+					panic(err)
+				}
+			}()
 		})
 	}
 }

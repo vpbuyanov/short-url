@@ -30,3 +30,11 @@ docker-compose.yml
 Makefile
 
 *.md
+
+shortenertest-darwin-arm64
+shortenertestbeta-darwin-arm64
+statictest-darwin-arm64
+
+golangci-lint
+.github
+.gitignore

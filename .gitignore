@@ -21,3 +21,11 @@ vendor/
 # IDEs directories
 .idea
 .vscode
+
+# lint
+golangci-lint
+
+# local test bin
+shortenertest-darwin-arm64
+shortenertestbeta-darwin-arm64
+statictest-darwin-arm64
