@@ -10,7 +10,7 @@ import (
 )
 
 type App interface {
-	Run(ctx context.Context) error
+	Run(context.Context, *logrus.Logger) error
 }
 
 type app struct {
@@ -18,16 +18,15 @@ type app struct {
 	logger *logrus.Logger
 }
 
-func New(config *configs.Config, log *logrus.Logger) App {
+func New(config *configs.Config) App {
 	return &app{
-		cfg:    config,
-		logger: log,
+		cfg: config,
 	}
 }
 
-func (app *app) Run(ctx context.Context) error {
-	s := server.New(app.logger, &app.cfg.Server)
+func (app *app) Run(ctx context.Context, log *logrus.Logger) error {
+	s := server.New(&app.cfg.Server)
 
-	s.Start(ctx)
+	s.Start(ctx, log)
 	return nil
 }

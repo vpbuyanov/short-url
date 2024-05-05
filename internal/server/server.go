@@ -12,31 +12,28 @@ import (
 )
 
 type server struct {
-	log *logrus.Logger
 	cfg *configs.Server
 }
 
 type Server interface {
-	Start(ctx context.Context)
+	Start(context.Context, *logrus.Logger)
 }
 
-func New(log *logrus.Logger, config *configs.Server) Server {
+func New(config *configs.Server) Server {
 	return &server{
-		log: log,
 		cfg: config,
 	}
 }
 
-func (s *server) Start(ctx context.Context) {
+func (s *server) Start(ctx context.Context, log *logrus.Logger) {
 	serv := fiber.New()
 	serv.Use(logger.New())
 
-	h := handlers.New(s.log, s.cfg)
+	h := handlers.New(log, s.cfg)
 	h.RegisterRouter(serv)
 
 	err := serv.Listen(s.cfg.Address)
 	if err != nil {
-		s.log.Errorf("Error starting server, err: %v", err)
 		return
 	}
 }

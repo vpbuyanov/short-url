@@ -22,9 +22,9 @@ func main() {
 		panic(fmt.Sprintf("failed to unmarshal log level: %v", err))
 	}
 
-	a := app.New(cfg, logger)
+	a := app.New(cfg)
 
-	err = a.Run(ctx)
+	err = a.Run(ctx, logger)
 	if err != nil {
 		panic(err)
 	}
