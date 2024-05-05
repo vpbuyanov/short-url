@@ -12,8 +12,8 @@ type (
 	}
 
 	Server struct {
-		Address     string
-		ResShortURL string
+		Address string
+		BaseURL string
 	}
 
 	Logger struct {
@@ -24,8 +24,16 @@ type (
 func LoadConfig() *Config {
 	server := Server{}
 
-	flag.StringVar(&server.Address, "a", "localhost:8080", "input server's address")
-	flag.StringVar(&server.ResShortURL, "b", "http://localhost:8080", "input server's port")
+	server.Address = os.Getenv("SERVER_ADDRESS")
+	server.BaseURL = os.Getenv("BASE_URL")
+
+	if server.Address == "" {
+		flag.StringVar(&server.Address, "a", "localhost:8080", "input server's address")
+	}
+
+	if server.BaseURL == "" {
+		flag.StringVar(&server.BaseURL, "b", "http://localhost:8080", "input server's port")
+	}
 
 	flag.Parse()
 

@@ -25,6 +25,9 @@ vendor/
 # lint
 golangci-lint
 
+# env
+.env
+
 # local test bin
 shortenertest-darwin-arm64
 shortenertestbeta-darwin-arm64
