@@ -14,8 +14,7 @@ type App interface {
 }
 
 type app struct {
-	cfg    *configs.Config
-	logger *logrus.Logger
+	cfg *configs.Config
 }
 
 func New(config *configs.Config) App {
