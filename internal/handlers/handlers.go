@@ -4,6 +4,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"
 
+	"github.com/vpbuyanov/short-url/configs"
 	"github.com/vpbuyanov/short-url/internal/services"
 )
 
@@ -14,14 +15,16 @@ type Handler interface {
 type handlers struct {
 	logger *logrus.Logger
 	url    services.URL
+	cfg    *configs.Server
 }
 
-func New(log *logrus.Logger) Handler {
+func New(log *logrus.Logger, cfg *configs.Server) Handler {
 	url := services.New()
 
 	return &handlers{
 		logger: log,
 		url:    url,
+		cfg:    cfg,
 	}
 }
 

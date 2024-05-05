@@ -26,7 +26,7 @@ func New(config *configs.Config, log *logrus.Logger) App {
 }
 
 func (app *app) Run(ctx context.Context) error {
-	s := server.New(app.logger, app.cfg.Server)
+	s := server.New(app.logger, &app.cfg.Server)
 
 	s.Start(ctx)
 	return nil

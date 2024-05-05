@@ -31,6 +31,7 @@ golangci-lint-clean:
 	sudo rm -rf ./golangci-lint
 
 dev:
+	docker-compose down
 	docker build -t vpbuyanov/short-url:latest .
 	docker-compose up -d
 
@@ -40,3 +41,7 @@ test:
 
 vet:
 	go vet -vettool=$(which ./statictest-darwin-arm64) ./...
+
+build:
+	rm ./cmd/shortener/shortener
+	go build -o ./cmd/shortener/shortener cmd/shortener/main.go

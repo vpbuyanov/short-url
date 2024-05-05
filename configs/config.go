@@ -1,6 +1,9 @@
 package configs
 
-import "os"
+import (
+	"flag"
+	"os"
+)
 
 type (
 	Config struct {
@@ -9,8 +12,8 @@ type (
 	}
 
 	Server struct {
-		Host string
-		Port string
+		Address     string
+		ResShortURL string
 	}
 
 	Logger struct {
@@ -19,16 +22,12 @@ type (
 )
 
 func LoadConfig() *Config {
-	serverPort := os.Getenv("SERVER_PORT")
-	serverHost := os.Getenv("SERVER_HOST")
+	server := Server{}
 
-	if serverPort == "" {
-		serverPort = "8080"
-	}
+	flag.StringVar(&server.Address, "a", "localhost:8080", "input server's address")
+	flag.StringVar(&server.ResShortURL, "b", "http://localhost:8080", "input server's port")
 
-	if serverHost == "" {
-		serverHost = "localhost"
-	}
+	flag.Parse()
 
 	logLevel := os.Getenv("LOG_LEVEL")
 	if logLevel == "" {
@@ -36,10 +35,7 @@ func LoadConfig() *Config {
 	}
 
 	return &Config{
-		Server: Server{
-			Host: serverHost,
-			Port: serverPort,
-		},
+		Server: server,
 		Logger: Logger{
 			LogLevel: logLevel,
 		},

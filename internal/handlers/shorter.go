@@ -26,7 +26,7 @@ func (h *handlers) createShortURL(ctx *fiber.Ctx) error {
 	}
 
 	shortURL := h.url.CreateShortURL(string(body))
-	shortURL = "http://localhost:8080/" + shortURL
+	shortURL = h.cfg.ResShortURL + "/" + shortURL
 
 	ctx.Set("Content-Type", "text/plain")
 

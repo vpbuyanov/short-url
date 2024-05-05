@@ -5,6 +5,8 @@ services:
     image: vpbuyanov/short-url:latest
     container_name: short-url
     restart: unless-stopped
+    ports:
+      - "8080:8080"
     networks:
       shortener:
 
