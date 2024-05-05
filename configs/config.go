@@ -22,20 +22,23 @@ type (
 )
 
 func LoadConfig() *Config {
-	server := Server{}
-
-	server.Address = os.Getenv("SERVER_ADDRESS")
-	server.BaseURL = os.Getenv("BASE_URL")
-
-	if server.Address == "" {
-		flag.StringVar(&server.Address, "a", "localhost:8080", "input server's address")
+	server := Server{
+		Address: "localhost:8080",
+		BaseURL: "http://localhost:8080",
 	}
 
-	if server.BaseURL == "" {
-		flag.StringVar(&server.BaseURL, "b", "http://localhost:8080", "input server's port")
-	}
+	flag.StringVar(&server.Address, "a", server.Address, "input server's address")
+	flag.StringVar(&server.BaseURL, "b", server.BaseURL, "input server's baseURL for shortener url")
 
 	flag.Parse()
+
+	if addr := os.Getenv("SERVER_ADDRESS"); addr != "" {
+		server.Address = addr
+	}
+
+	if baseURL := os.Getenv("BASE_URL"); baseURL != "" {
+		server.BaseURL = baseURL
+	}
 
 	logLevel := os.Getenv("LOG_LEVEL")
 	if logLevel == "" {

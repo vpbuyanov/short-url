@@ -36,8 +36,9 @@ dev:
 	docker-compose up -d
 
 test:
-	export PATH=/Users/vpbuyanov/go/src/github.com/vpbuyanov/short-url:$PATH
-	sudo shortenertest-darwin-arm64 -test.v -test.run=^TestIteration$(iter)$$ -binary-path=cmd/shortener/shortener -source-path=.
+	sudo shortenertestbeta-darwin-arm64 -test.v -test.run=^TestIteration$(iter)$$ \
+                       -binary-path=cmd/shortener/shortener \
+                       -server-port=8080
 
 vet:
 	go vet -vettool=$(which ./statictest-darwin-arm64) ./...
