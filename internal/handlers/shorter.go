@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -26,11 +27,14 @@ func (h *handlers) createShortURL(ctx *fiber.Ctx) error {
 	}
 
 	shortURL := h.url.CreateShortURL(string(body))
-	shortURL = h.cfg.BaseURL + "/" + shortURL
+	path, err := url.JoinPath(h.cfg.BaseURL, shortURL)
+	if err != nil {
+		return fmt.Errorf("can't join path, err: %w", err)
+	}
 
 	ctx.Set("Content-Type", "text/plain")
 
-	err := ctx.Status(fiber.StatusCreated).SendString(shortURL)
+	err = ctx.Status(fiber.StatusCreated).SendString(path)
 	if err != nil {
 		return fmt.Errorf(canNotSendRequest, err)
 	}
@@ -40,8 +44,8 @@ func (h *handlers) createShortURL(ctx *fiber.Ctx) error {
 
 func (h *handlers) getFullURL(ctx *fiber.Ctx) error {
 	urls := ctx.AllParams()
-	url := urls["id"]
-	if len(url) == 0 {
+	getURL := urls["id"]
+	if len(getURL) == 0 {
 		h.logger.Error("empty url")
 		err := ctx.Status(fiber.StatusBadRequest).SendString("empty url")
 		if err != nil {
@@ -51,7 +55,7 @@ func (h *handlers) getFullURL(ctx *fiber.Ctx) error {
 		return nil
 	}
 
-	fullURL := h.url.GetShortURL(url)
+	fullURL := h.url.GetShortURL(getURL)
 
 	if fullURL == nil {
 		h.logger.Error("short url not found")

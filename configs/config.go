@@ -32,11 +32,13 @@ func LoadConfig() *Config {
 
 	flag.Parse()
 
-	if addr := os.Getenv("SERVER_ADDRESS"); addr != "" {
+	addr, ok := os.LookupEnv("SERVER_ADDRESS")
+	if ok {
 		server.Address = addr
 	}
 
-	if baseURL := os.Getenv("BASE_URL"); baseURL != "" {
+	baseURL, ok := os.LookupEnv("BASE_URL")
+	if ok {
 		server.BaseURL = baseURL
 	}
 
