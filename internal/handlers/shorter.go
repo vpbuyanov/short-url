@@ -12,7 +12,7 @@ const (
 	canNotSendRequest = "can not send request, err: %w"
 )
 
-func (h *handlers) createShortURL(ctx *fiber.Ctx) error {
+func (h *Handlers) createShortURL(ctx *fiber.Ctx) error {
 	body := ctx.BodyRaw()
 
 	if len(body) == 0 {
@@ -42,7 +42,7 @@ func (h *handlers) createShortURL(ctx *fiber.Ctx) error {
 	return nil
 }
 
-func (h *handlers) getFullURL(ctx *fiber.Ctx) error {
+func (h *Handlers) getFullURL(ctx *fiber.Ctx) error {
 	urls := ctx.AllParams()
 	getURL := urls["id"]
 	if len(getURL) == 0 {

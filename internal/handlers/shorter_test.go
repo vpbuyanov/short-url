@@ -12,6 +12,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 
+	"github.com/vpbuyanov/short-url/internal/repos"
 	"github.com/vpbuyanov/short-url/internal/services"
 )
 
@@ -111,10 +112,11 @@ func TestCreateShortURL(t *testing.T) {
 	a.Use(logger.New())
 
 	url := services.New()
+	reposURL := repos.New(url)
 
-	h := handlers{
+	h := Handlers{
 		logger: log,
-		url:    url,
+		url:    reposURL,
 	}
 
 	a.Post("/", h.createShortURL)
@@ -215,10 +217,11 @@ func TestGetFullURL(t *testing.T) {
 	a.Use(logger.New())
 
 	url := services.New()
+	reposURL := repos.New(url)
 
-	h := handlers{
+	h := Handlers{
 		logger: log,
-		url:    url,
+		url:    reposURL,
 	}
 
 	a.Get("/:id", h.getFullURL)

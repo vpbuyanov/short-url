@@ -6,8 +6,8 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"github.com/vpbuyanov/short-url/configs"
 	"github.com/vpbuyanov/short-url/internal/app"
+	"github.com/vpbuyanov/short-url/internal/configs"
 )
 
 func main() {
