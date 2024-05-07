@@ -30,19 +30,23 @@ _golangci-lint-rm-unformatted-report: _golangci-lint-format-report
 golangci-lint-clean:
 	sudo rm -rf ./golangci-lint
 
+.PHONY: dev
 dev:
 	docker-compose down
 	docker build -t vpbuyanov/short-url:latest .
 	docker-compose up -d
 
+.PHONY: test
 test:
 	sudo shortenertestbeta-darwin-arm64 -test.v -test.run=^TestIteration$(iter)$$ \
                        -binary-path=cmd/shortener/shortener \
                        -server-port=8080
 
+.PHONY: vet
 vet:
 	go vet -vettool=$(which ./statictest-darwin-arm64) ./...
 
+.PHONY: build
 build:
 	rm ./cmd/shortener/shortener
 	go build -o ./cmd/shortener/shortener cmd/shortener/main.go
