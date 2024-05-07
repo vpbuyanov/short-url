@@ -2,9 +2,8 @@ package main
 
 import (
 	"context"
-	"fmt"
 
-	"github.com/sirupsen/logrus"
+	"github.com/vpbuyanov/short-url/internal/services"
 
 	"github.com/vpbuyanov/short-url/internal/app"
 	"github.com/vpbuyanov/short-url/internal/configs"
@@ -14,12 +13,9 @@ func main() {
 	ctx := context.Background()
 	cfg := configs.LoadConfig()
 
-	logger := logrus.New()
-	logger.SetFormatter(&logrus.JSONFormatter{})
-
-	err := logger.Level.UnmarshalText([]byte(cfg.Logger.LogLevel))
+	logger, err := services.InitLogger(cfg.Logger)
 	if err != nil {
-		panic(fmt.Sprintf("failed to unmarshal log level: %v", err))
+		panic(err)
 	}
 
 	a := app.New(cfg)
