@@ -12,8 +12,9 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 
+	"github.com/vpbuyanov/short-url/internal/configs"
 	"github.com/vpbuyanov/short-url/internal/repos"
-	"github.com/vpbuyanov/short-url/internal/services"
+	"github.com/vpbuyanov/short-url/internal/usecase"
 )
 
 func TestCreateShortURL(t *testing.T) {
@@ -111,12 +112,14 @@ func TestCreateShortURL(t *testing.T) {
 	a := fiber.New()
 	a.Use(logger.New())
 
-	url := services.New()
-	reposURL := repos.New(url)
+	reposURL := repos.New()
+	urlUC := usecase.New(reposURL, &configs.Server{
+		BaseURL: "http://localhost:8080",
+	})
 
 	h := Handlers{
 		logger: log,
-		url:    reposURL,
+		url:    urlUC,
 	}
 
 	a.Post("/", h.createShortURL)
@@ -178,7 +181,7 @@ func TestGetFullURL(t *testing.T) {
 
 				assert.Equal(t, http.StatusBadRequest, w.StatusCode)
 				assert.Equal(t, "text/plain; charset=utf-8", w.Header.Get("Content-Type"))
-				assert.Equal(t, "short url not found", string(body))
+				assert.Equal(t, "not found url", string(body))
 			},
 		},
 		{
@@ -216,12 +219,14 @@ func TestGetFullURL(t *testing.T) {
 	a := fiber.New()
 	a.Use(logger.New())
 
-	url := services.New()
-	reposURL := repos.New(url)
+	reposURL := repos.New()
+	urlUC := usecase.New(reposURL, &configs.Server{
+		BaseURL: "http://localhost:8080",
+	})
 
 	h := Handlers{
 		logger: log,
-		url:    reposURL,
+		url:    urlUC,
 	}
 
 	a.Get("/:id", h.getFullURL)

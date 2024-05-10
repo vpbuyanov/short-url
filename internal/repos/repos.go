@@ -1,43 +1,37 @@
 package repos
 
-import "github.com/vpbuyanov/short-url/internal/services"
-
 type URL struct {
-	url     services.URL
-	saveURL map[string]string
+	shortURL map[string]string
+	fullURL  map[string]string
 }
 
-func New(service services.URL) URL {
-	saveURL := make(map[string]string)
-	saveURL["abcdefgG12"] = "https://google.com"
+func New() URL {
+	shortURL := make(map[string]string)
+	fullURL := make(map[string]string)
+
+	shortURL["abcdefgG12"] = "https://google.com"
+	fullURL["https://google.com"] = "abcdefgG12"
 
 	return URL{
-		url:     service,
-		saveURL: saveURL,
+		shortURL: shortURL,
 	}
 }
 
-func (u *URL) CreateShortURL(url string) string {
-	var res string
+func (u *URL) GetShortURL(fullURL string) (string, bool) {
+	shortURL, ok := u.fullURL[fullURL]
 
-	for range 3 {
-		res = u.url.GenerateShortURL()
-
-		_, ok := u.saveURL[res]
-		if !ok {
-			break
-		}
-	}
-
-	u.saveURL[res] = url
-
-	return res
+	return shortURL, ok
 }
 
-func (u *URL) GetShortURL(url string) *string {
-	getURL, ok := u.saveURL[url]
+func (u *URL) SaveShortURL(fullURL, shortURL string) {
+	u.shortURL[shortURL] = fullURL
+	u.fullURL[fullURL] = shortURL
+}
+
+func (u *URL) GetFullURL(shortURL string) *string {
+	url, ok := u.shortURL[shortURL]
 	if ok {
-		return &getURL
+		return &url
 	}
 
 	return nil

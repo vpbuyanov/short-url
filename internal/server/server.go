@@ -10,7 +10,7 @@ import (
 
 	"github.com/vpbuyanov/short-url/internal/configs"
 	"github.com/vpbuyanov/short-url/internal/handlers"
-	"github.com/vpbuyanov/short-url/internal/repos"
+	"github.com/vpbuyanov/short-url/internal/usecase"
 )
 
 type Server struct {
@@ -23,11 +23,11 @@ func New(config *configs.Server) Server {
 	}
 }
 
-func (s *Server) Start(ctx context.Context, log *logrus.Logger, url repos.URL) error {
+func (s *Server) Start(ctx context.Context, url *usecase.URL, log *logrus.Logger) error {
 	serv := fiber.New()
 	serv.Use(logger.New())
 
-	h := handlers.New(log, s.cfg, url)
+	h := handlers.New(s.cfg, url, log)
 	h.RegisterRouter(serv)
 
 	err := serv.Listen(s.cfg.Address)

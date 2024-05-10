@@ -9,7 +9,7 @@ import (
 	"github.com/vpbuyanov/short-url/internal/configs"
 	"github.com/vpbuyanov/short-url/internal/repos"
 	"github.com/vpbuyanov/short-url/internal/server"
-	"github.com/vpbuyanov/short-url/internal/services"
+	"github.com/vpbuyanov/short-url/internal/usecase"
 )
 
 type App struct {
@@ -25,10 +25,10 @@ func New(config *configs.Config) App {
 func (app *App) Run(ctx context.Context, log *logrus.Logger) error {
 	s := server.New(&app.cfg.Server)
 
-	url := services.New()
-	reposURL := repos.New(url)
+	reposURL := repos.New()
+	urlUC := usecase.New(reposURL, &app.cfg.Server)
 
-	err := s.Start(ctx, log, reposURL)
+	err := s.Start(ctx, urlUC, log)
 	if err != nil {
 		return fmt.Errorf("can't start server, err: %w", err)
 	}

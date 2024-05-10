@@ -22,6 +22,6 @@ func main() {
 
 	err = a.Run(ctx, logger)
 	if err != nil {
-		panic(err)
+		logger.Error(err)
 	}
 }

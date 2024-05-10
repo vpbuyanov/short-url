@@ -3,7 +3,6 @@ package handlers
 import (
 	"fmt"
 	"net/http"
-	"net/url"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -26,15 +25,14 @@ func (h *Handlers) createShortURL(ctx *fiber.Ctx) error {
 		return nil
 	}
 
-	shortURL := h.url.CreateShortURL(string(body))
-	path, err := url.JoinPath(h.cfg.BaseURL, shortURL)
+	url, err := h.url.CreateAndSaveShortURL(string(body))
 	if err != nil {
-		return fmt.Errorf("can't join path, err: %w", err)
+		return fmt.Errorf("can not create and save url, err: %w", err)
 	}
 
 	ctx.Set("Content-Type", "text/plain")
 
-	err = ctx.Status(fiber.StatusCreated).SendString(path)
+	err = ctx.Status(fiber.StatusCreated).SendString(*url)
 	if err != nil {
 		return fmt.Errorf(canNotSendRequest, err)
 	}
@@ -55,11 +53,11 @@ func (h *Handlers) getFullURL(ctx *fiber.Ctx) error {
 		return nil
 	}
 
-	fullURL := h.url.GetShortURL(getURL)
+	fullURL, err := h.url.GetFullURL(getURL)
+	if err != nil {
+		h.logger.Errorf("can not get short url, err: %v", err.Error())
 
-	if fullURL == nil {
-		h.logger.Error("short url not found")
-		err := ctx.Status(http.StatusBadRequest).SendString("short url not found")
+		err = ctx.Status(http.StatusBadRequest).SendString(err.Error())
 		if err != nil {
 			return fmt.Errorf(canNotSendRequest, err)
 		}
@@ -68,7 +66,7 @@ func (h *Handlers) getFullURL(ctx *fiber.Ctx) error {
 	}
 
 	ctx.Status(http.StatusTemporaryRedirect).Set("Location", *fullURL)
-	err := ctx.Send(nil)
+	err = ctx.Send(nil)
 	if err != nil {
 		return fmt.Errorf(canNotSendRequest, err)
 	}

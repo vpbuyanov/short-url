@@ -5,16 +5,16 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/vpbuyanov/short-url/internal/configs"
-	"github.com/vpbuyanov/short-url/internal/repos"
+	"github.com/vpbuyanov/short-url/internal/usecase"
 )
 
 type Handlers struct {
 	logger *logrus.Logger
-	url    repos.URL
+	url    *usecase.URL
 	cfg    *configs.Server
 }
 
-func New(log *logrus.Logger, cfg *configs.Server, url repos.URL) Handlers {
+func New(cfg *configs.Server, url *usecase.URL, log *logrus.Logger) Handlers {
 	return Handlers{
 		logger: log,
 		url:    url,
