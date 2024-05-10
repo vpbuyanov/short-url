@@ -14,6 +14,7 @@ func New() URL {
 
 	return URL{
 		shortURL: shortURL,
+		fullURL:  fullURL,
 	}
 }
 
