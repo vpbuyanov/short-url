@@ -17,8 +17,6 @@ import (
 )
 
 func TestCreateShortURL(t *testing.T) {
-	cfg := configs.LoadConfig()
-
 	tests := []struct {
 		name        string
 		path        string
@@ -107,12 +105,17 @@ func TestCreateShortURL(t *testing.T) {
 	a := fiber.New()
 	a.Use(logger.New())
 
+	cfg := configs.Server{
+		BaseURL: "http://localhost:8080",
+		Address: "localhost:8080",
+	}
+
 	reposURL := repos.New()
-	urlUC := usecase.New(reposURL, &cfg.Server)
+	urlUC := usecase.New(reposURL, &cfg)
 
 	h := Handlers{
 		url: urlUC,
-		cfg: &cfg.Server,
+		cfg: &cfg,
 	}
 
 	a.Post("/", h.createShortURL)
@@ -140,8 +143,6 @@ func TestCreateShortURL(t *testing.T) {
 }
 
 func TestGetFullURL(t *testing.T) {
-	cfg := configs.LoadConfig()
-
 	tests := []struct {
 		name   string
 		path   string
@@ -223,14 +224,19 @@ func TestGetFullURL(t *testing.T) {
 	a := fiber.New()
 	a.Use(logger.New())
 
+	cfg := configs.Server{
+		BaseURL: "http://localhost:8080",
+		Address: "localhost:8080",
+	}
+
 	reposURL := repos.New()
-	urlUC := usecase.New(reposURL, &cfg.Server)
+	urlUC := usecase.New(reposURL, &cfg)
 
 	reposURL.SaveShortURL("https://google.com", "abcdefgG12")
 
 	h := Handlers{
 		url: urlUC,
-		cfg: &cfg.Server,
+		cfg: &cfg,
 	}
 
 	a.Get("/:id", h.getFullURL)
