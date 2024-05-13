@@ -9,9 +9,6 @@ func New() URL {
 	shortURL := make(map[string]string)
 	fullURL := make(map[string]string)
 
-	shortURL["abcdefgG12"] = "https://google.com"
-	fullURL["https://google.com"] = "abcdefgG12"
-
 	return URL{
 		shortURL: shortURL,
 		fullURL:  fullURL,

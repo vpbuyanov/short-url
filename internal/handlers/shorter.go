@@ -15,8 +15,6 @@ func (h *Handlers) createShortURL(ctx *fiber.Ctx) error {
 	body := ctx.BodyRaw()
 
 	if len(body) == 0 {
-		h.logger.Error("empty body")
-
 		err := ctx.Status(fiber.StatusBadRequest).SendString("empty body")
 		if err != nil {
 			return fmt.Errorf(canNotSendRequest, err)
@@ -44,7 +42,6 @@ func (h *Handlers) getFullURL(ctx *fiber.Ctx) error {
 	urls := ctx.AllParams()
 	getURL := urls["id"]
 	if len(getURL) == 0 {
-		h.logger.Error("empty url")
 		err := ctx.Status(fiber.StatusBadRequest).SendString("empty url")
 		if err != nil {
 			return fmt.Errorf(canNotSendRequest, err)
@@ -55,8 +52,6 @@ func (h *Handlers) getFullURL(ctx *fiber.Ctx) error {
 
 	fullURL, err := h.url.GetFullURL(getURL)
 	if err != nil {
-		h.logger.Errorf("can not get short url, err: %v", err.Error())
-
 		err = ctx.Status(http.StatusBadRequest).SendString(err.Error())
 		if err != nil {
 			return fmt.Errorf(canNotSendRequest, err)

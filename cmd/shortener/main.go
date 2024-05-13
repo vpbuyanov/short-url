@@ -3,7 +3,7 @@ package main
 import (
 	"context"
 
-	"github.com/vpbuyanov/short-url/internal/services"
+	"github.com/gofiber/fiber/v2/log"
 
 	"github.com/vpbuyanov/short-url/internal/app"
 	"github.com/vpbuyanov/short-url/internal/configs"
@@ -13,15 +13,11 @@ func main() {
 	ctx := context.Background()
 	cfg := configs.LoadConfig()
 
-	logger, err := services.InitLogger(cfg.Logger)
-	if err != nil {
-		panic(err)
-	}
-
 	a := app.New(cfg)
 
-	err = a.Run(ctx, logger)
+	err := a.Run(ctx)
 	if err != nil {
-		logger.Error(err)
+		log.Error(err)
+		return
 	}
 }

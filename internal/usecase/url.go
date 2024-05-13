@@ -41,16 +41,18 @@ func (u *URL) CreateAndSaveShortURL(url string) (*string, error) {
 		if fullURL != nil {
 			continue
 		}
+
+		u.urlRepos.SaveShortURL(url, shortURL)
+
+		path, err := neturl.JoinPath(u.cfg.BaseURL, shortURL)
+		if err != nil {
+			return nil, fmt.Errorf("can't join path, err: %w", err)
+		}
+
+		return &path, nil
 	}
 
-	u.urlRepos.SaveShortURL(url, shortURL)
-
-	path, err := neturl.JoinPath(u.cfg.BaseURL, shortURL)
-	if err != nil {
-		return nil, fmt.Errorf("can't join path, err: %w", err)
-	}
-
-	return &path, nil
+	return nil, errors.New("can not generate unique short URL")
 }
 
 func (u *URL) GetFullURL(url string) (*string, error) {

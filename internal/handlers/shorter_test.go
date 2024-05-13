@@ -9,7 +9,6 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
-	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/vpbuyanov/short-url/internal/configs"
@@ -18,11 +17,7 @@ import (
 )
 
 func TestCreateShortURL(t *testing.T) {
-	var (
-		log = logrus.New()
-	)
-
-	log.Level = logrus.DebugLevel
+	cfg := configs.LoadConfig()
 
 	tests := []struct {
 		name        string
@@ -113,13 +108,11 @@ func TestCreateShortURL(t *testing.T) {
 	a.Use(logger.New())
 
 	reposURL := repos.New()
-	urlUC := usecase.New(reposURL, &configs.Server{
-		BaseURL: "http://localhost:8080",
-	})
+	urlUC := usecase.New(reposURL, &cfg.Server)
 
 	h := Handlers{
-		logger: log,
-		url:    urlUC,
+		url: urlUC,
+		cfg: &cfg.Server,
 	}
 
 	a.Post("/", h.createShortURL)
@@ -139,7 +132,7 @@ func TestCreateShortURL(t *testing.T) {
 			defer func() {
 				err = resp.Body.Close()
 				if err != nil {
-					panic(err)
+					return
 				}
 			}()
 		})
@@ -147,11 +140,7 @@ func TestCreateShortURL(t *testing.T) {
 }
 
 func TestGetFullURL(t *testing.T) {
-	var (
-		log = logrus.New()
-	)
-
-	log.Level = logrus.DebugLevel
+	cfg := configs.LoadConfig()
 
 	tests := []struct {
 		name   string
@@ -214,19 +203,34 @@ func TestGetFullURL(t *testing.T) {
 				assert.Equal(t, "Method Not Allowed", string(body))
 			},
 		},
+		{
+			name:   "negative_test_#6",
+			path:   "/1234567890102",
+			method: http.MethodGet,
+			assert: func(w *http.Response) {
+				body, err := io.ReadAll(w.Body)
+				if err != nil {
+					return
+				}
+
+				assert.Equal(t, http.StatusBadRequest, w.StatusCode)
+				assert.Equal(t, "text/plain; charset=utf-8", w.Header.Get("Content-Type"))
+				assert.Equal(t, "not found url", string(body))
+			},
+		},
 	}
 
 	a := fiber.New()
 	a.Use(logger.New())
 
 	reposURL := repos.New()
-	urlUC := usecase.New(reposURL, &configs.Server{
-		BaseURL: "http://localhost:8080",
-	})
+	urlUC := usecase.New(reposURL, &cfg.Server)
+
+	reposURL.SaveShortURL("https://google.com", "abcdefgG12")
 
 	h := Handlers{
-		logger: log,
-		url:    urlUC,
+		url: urlUC,
+		cfg: &cfg.Server,
 	}
 
 	a.Get("/:id", h.getFullURL)
@@ -245,7 +249,7 @@ func TestGetFullURL(t *testing.T) {
 			defer func() {
 				err = resp.Body.Close()
 				if err != nil {
-					panic(err)
+					return
 				}
 			}()
 		})

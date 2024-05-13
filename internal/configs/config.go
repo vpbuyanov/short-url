@@ -3,6 +3,7 @@ package configs
 import (
 	"flag"
 	"os"
+	"strconv"
 )
 
 type (
@@ -17,7 +18,7 @@ type (
 	}
 
 	Logger struct {
-		LogLevel string
+		LogLevel int8
 	}
 )
 
@@ -42,15 +43,22 @@ func LoadConfig() *Config {
 		server.BaseURL = baseURL
 	}
 
-	logLevel := os.Getenv("LOG_LEVEL")
-	if logLevel == "" {
-		logLevel = "info"
+	logger := Logger{
+		LogLevel: 1,
+	}
+
+	level, ok := os.LookupEnv("LOG_LEVEL")
+	if ok {
+		logLevel, err := strconv.Atoi(level)
+		if err != nil {
+			return nil
+		}
+
+		logger.LogLevel = int8(logLevel)
 	}
 
 	return &Config{
 		Server: server,
-		Logger: Logger{
-			LogLevel: logLevel,
-		},
+		Logger: logger,
 	}
 }
