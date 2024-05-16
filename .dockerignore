@@ -22,13 +22,19 @@ vendor/
 .idea
 .vscode
 
-# lint
-golangci-lint
-
-# env
+# Env
 .env
 
-# local test bin
+Dockerfile
+docker-compose.yml
+Makefile
+
+*.md
+
 shortenertest-darwin-arm64
 shortenertestbeta-darwin-arm64
 statictest-darwin-arm64
+
+golangci-lint
+.github
+.gitignore
